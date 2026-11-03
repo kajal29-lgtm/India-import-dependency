@@ -1,0 +1,30 @@
+SELECT HS, Commodity,
+       ROUND(W_2526) AS import_usd_m,
+       top_c2526 AS main_supplier,
+       ROUND(top_sh2526 * 100, 1) AS share_pct,
+       CASE WHEN top_sh2526 > 0.5 THEN 'High'
+            WHEN top_sh2526 > 0.3 THEN 'Medium'
+            ELSE 'Low' END AS risk_band
+FROM dependency
+WHERE top_sh2526 > 0.2
+ORDER BY W_2526 DESC
+LIMIT 20; 
+
+SELECT HS, Commodity,
+       ROUND(W_2526) AS world_usd_m,
+       top_c2526 AS main_supplier,
+       ROUND(top_sh2425*100,1) AS top_share_2425,
+       ROUND(top_sh2526*100,1) AS top_share_2526,
+       top_c2425 AS prev_supplier,
+       CASE WHEN top_c2425 <> top_c2526 THEN 'Changed' ELSE '' END AS supplier_flip
+FROM dependency
+WHERE top_sh2526 > 0.2
+ORDER BY W_2526 DESC; 
+
+
+SELECT HS, Commodity, 'China' AS Country, '2024-25' AS FY, China_2425 AS Value, China_sh2425 AS Share FROM dependency
+UNION ALL SELECT HS, Commodity, 'China', '2025-26', China_2526, China_sh2526 FROM dependency
+UNION ALL SELECT HS, Commodity, 'Russia', '2024-25', Russia_2425, Russia_sh2425 FROM dependency
+UNION ALL SELECT HS, Commodity, 'Russia', '2025-26', Russia_2526, Russia_sh2526 FROM dependency
+UNION ALL SELECT HS, Commodity, 'USA', '2024-25', USA_2425, USA_sh2425 FROM dependency
+UNION ALL SELECT HS, Commodity, 'USA', '2025-26', USA_2526, USA_sh2526 FROM dependency;
